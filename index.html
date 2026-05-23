@@ -136,7 +136,7 @@
       margin-top: 30px;
     }
 
-    /* Estilos de la pantalla de Alarma Crítica */
+    /* Estilos de la pantalla de Alarma Crítica (Ventana Emergente de Impacto) */
     #pantalla-alarma {
       display: none;
       position: fixed;
@@ -200,7 +200,7 @@
     </div>
 
     <div class="status-panel">
-      <span>⏰ Alertas e Icono PWA Configurados con Éxito</span>
+      <span>⏰ Sistema de Cadena Antirrestricciones Activo</span>
     </div>
 
     <div class="med-list-title">Próximas Alertas Programadas</div>
@@ -218,7 +218,7 @@
       {
         nombre: "Paracetamol",
         dosis: "1 tableta de 500mg",
-        hora: "08:00" // Formato 24 horas (HH:MM)
+        hora: "08:00" // Formato militar 24 horas (HH:MM)
       },
       {
         nombre: "Amoxicilina",
@@ -238,11 +238,11 @@
     // Registrar el Service Worker (Conexión al archivo sw.js)
     if ('serviceWorker' in navigator && 'PushManager' in window) {
       navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('Service Worker de Alertas e Icono Vinculado.', reg))
+        .then(reg => console.log('Service Worker de Alertas Avanzadas Activo.', reg))
         .catch(err => console.error('Error al registrar Service Worker:', err));
     }
 
-    // Escuchar si el sw.js avisa que se atendió la alerta desde fuera
+    // Escuchar si el sw.js avisa que se atendió la alarma desde una notificación externa
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('message', (event) => {
         if (event.data.accion === 'alertaAtendida') {
@@ -278,7 +278,7 @@
 
     // Activar alarmas (Dentro y fuera de la aplicación)
     function activarBombardeoAlarma(nombre, dosis) {
-      // 1. Envía la orden al sw.js para que el teléfono vibre e interrumpa visualmente de forma externa cada 3 segundos
+      // 1. Envía la orden al sw.js para que inicie la cadena de notificaciones ruidosas e interrupciones visuales
       if (navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({
           accion: 'iniciarAlarmaInfinita',
@@ -288,11 +288,11 @@
         });
       }
 
-      // 2. Muestra la ventana modal roja de impacto visual en la app
+      // 2. Despliega la ventana emergente roja de impacto visual inmediato si la app está en pantalla
       document.getElementById('detalles-alarma-urgente').innerText = `Toca tomar:\n${nombre} (${dosis})`;
       document.getElementById('pantalla-alarma').style.display = 'flex';
 
-      // 3. Suena alarma sonora de alta frecuencia
+      // 3. Suena la alarma sonora nativa continua
       dispararSonidoFuerteNativo();
     }
 
@@ -302,10 +302,14 @@
         audioAlarma.loop = true; 
         audioAlarma.volume = 1.0; 
       }
-      audioAlarma.play().catch(e => console.log("Se requiere interacción física para iniciar audio nativo en la web."));
+      audioAlarma.play().catch(e => console.log("Audio retenido por el navegador hasta interacción física."));
     }
 
     function desactivarAlarmaDesdePantalla() {
+      // Ordenar de manera estricta al sw.js que rompa la cadena de bombardeo externo
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ accion: 'detenerAlarmaTotal' });
+      }
       detenerAlarmaSonoraAbsoluta();
     }
 
