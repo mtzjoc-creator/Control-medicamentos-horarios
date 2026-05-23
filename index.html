@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Medicamentos - Moisés Aguilar Miranda</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="manifest" href="manifest.json">
+
+  <link rel="apple-touch-icon" href="https://images.t2.ai/direct/1000093550.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#1a446c">
+  <meta name="theme-color" content="#1a446c">
+
+  <style>
+    :root {
+      --color-primario: #1a446c;
+      --color-secundario: #2e7d32;
+      --color-fondo: #f4f7f6;
+      --color-tarjeta: #ffffff;
+      --texto-principal: #333333;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--color-fondo);
+      color: var(--texto-principal);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: var(--color-tarjeta);
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      padding: 25px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .header img {
+      width: 120px;
+      height: auto;
+      margin-bottom: 15px;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      color: var(--color-primario);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .header h2 {
+      font-size: 1.1rem;
+      color: var(--color-secundario);
+      font-style: italic;
+      margin-bottom: 20px;
+      font-weight: 400;
+    }
+
+    .status-panel {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 25px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .med-list-title {
+      text-align: left;
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 10px;
+      font-weight: 600;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 5px;
+    }
+
+    .med-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border-left: 4px solid var(--color-primario);
+      text-align: left;
+    }
+
+    .med-info .med-name {
+      font-weight: 600;
+      color: var(--color-primario);
+      font-size: 1rem;
+    }
+
+    .med-info .med-dose {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .med-time {
+      background: var(--color-primario);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .footer-text {
+      font-size: 0.75rem;
+      color: #aaa;
+      margin-top: 30px;
+    }
+
+    /* Estilos de la pantalla de Alarma Crítica */
+    #pantalla-alarma {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #d32f2f;
+      color: white;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 99999;
+      animation: parpadeo 1s infinite alternate;
+      padding: 20px;
+      text-align: center;
+    }
+
+    #pantalla-alarma h2 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    #pantalla-alarma p {
+      font-size: 1.5rem;
+      margin-bottom: 30px;
+    }
+
+    #pantalla-alarma button {
+      background: white;
+      color: #d32f2f;
+      border: none;
+      padding: 20px 40px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      text-transform: uppercase;
+    }
+
+    @keyframes parpadeo {
+      from { background: #b71c1c; }
+      to { background: #f44336; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="pantalla-alarma">
+    <h2>🚨 ALERTA DE MEDICAMENTO 🚨</h2>
+    <p id="detalles-alarma-urgente">Cargando datos...</p>
+    <button onclick="desactivarAlarmaDesdePantalla()">Apagar Alarma e Informar</button>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <img src="https://images.t2.ai/direct/1000093550.png" alt="Logo Control de Medicamentos">
+      <h1>Control de Medicamentos</h1>
+      <h2>“Moisés Aguilar Miranda”</h2>
+    </div>
+
+    <div class="status-panel">
+      <span>⏰ Alertas e Icono PWA Configurados con Éxito</span>
+    </div>
+
+    <div class="med-list-title">Próximas Alertas Programadas</div>
+    <div id="lista-medicamentos-container">
+      </div>
+
+    <p class="footer-text">© 2026 Sistema de Gestión Interna Nativa</p>
+  </div>
+
+  <script>
+    // ========================================================
+    // CONFIGURACIÓN DE HORARIOS (Registra tus horas aquí)
+    // ========================================================
+    const listaMedicamentos = [
+      {
+        nombre: "Paracetamol",
+        dosis: "1 tableta de 500mg",
+        hora: "08:00" // Formato 24 horas (HH:MM)
+      },
+      {
+        nombre: "Amoxicilina",
+        dosis: "5 ml",
+        hora: "16:00"
+      },
+      {
+        nombre: "Vitaminas",
+        dosis: "1 cápsula",
+        hora: "21:30"
+      }
+    ];
+
+    let ultimaAlertaDisparada = "";
+    let audioAlarma = null;
+
+    // Registrar el Service Worker (Conexión al archivo sw.js)
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker de Alertas e Icono Vinculado.', reg))
+        .catch(err => console.error('Error al registrar Service Worker:', err));
+    }
+
+    // Escuchar si el sw.js avisa que se atendió la alerta desde fuera
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data.accion === 'alertaAtendida') {
+          detenerAlarmaSonoraAbsoluta();
+        }
+      });
+    }
+
+    function solicitarPermisos() {
+      if ('Notification' in window) {
+        Notification.requestPermission();
+      }
+    }
+
+    // Reloj verificador constante de tiempo real
+    function iniciarRelojVerificador() {
+      setInterval(() => {
+        const ahora = new Date();
+        const horas = String(ahora.getHours()).padStart(2, '0');
+        const minutos = String(ahora.getMinutes()).padStart(2, '0');
+        const horaActual = `${horas}:${minutos}`;
+
+        if (ultimaAlertaDisparada !== horaActual) {
+          const medicamentoProgramado = listaMedicamentos.find(med => med.hora === horaActual);
+
+          if (medicamentoProgramado) {
+            ultimaAlertaDisparada = horaActual; 
+            activarBombardeoAlarma(medicamentoProgramado.nombre, medicamentoProgramado.dosis);
+          }
+        }
+      }, 1000);
+    }
+
+    // Activar alarmas (Dentro y fuera de la aplicación)
+    function activarBombardeoAlarma(nombre, dosis) {
+      // 1. Envía la orden al sw.js para que el teléfono vibre e interrumpa visualmente de forma externa cada 3 segundos
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          accion: 'iniciarAlarmaInfinita',
+          nombre: nombre,
+          dosis: dosis,
+          url: window.location.href
+        });
+      }
+
+      // 2. Muestra la ventana modal roja de impacto visual en la app
+      document.getElementById('detalles-alarma-urgente').innerText = `Toca tomar:\n${nombre} (${dosis})`;
+      document.getElementById('pantalla-alarma').style.display = 'flex';
+
+      // 3. Suena alarma sonora de alta frecuencia
+      dispararSonidoFuerteNativo();
+    }
+
+    function dispararSonidoFuerteNativo() {
+      if (!audioAlarma) {
+        audioAlarma = new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg');
+        audioAlarma.loop = true; 
+        audioAlarma.volume = 1.0; 
+      }
+      audioAlarma.play().catch(e => console.log("Se requiere interacción física para iniciar audio nativo en la web."));
+    }
+
+    function desactivarAlarmaDesdePantalla() {
+      detenerAlarmaSonoraAbsoluta();
+    }
+
+    function detenerAlarmaSonoraAbsoluta() {
+      if (audioAlarma) {
+        audioAlarma.pause();
+        audioAlarma.currentTime = 0;
+      }
+      document.getElementById('pantalla-alarma').style.display = 'none';
+      console.log("Alarma desactivada de forma absoluta.");
+    }
+
+    // Pintar la interfaz del menú de medicamentos
+    function pintarMedicamentos() {
+      const container = document.getElementById('lista-medicamentos-container');
+      container.innerHTML = ""; 
+
+      listaMedicamentos.forEach(med => {
+        container.innerHTML += `
+          <div class="med-item">
+            <div class="med-info">
+              <div class="med-name">${med.nombre}</div>
+              <div class="med-dose">${med.dosis}</div>
+            </div>
+            <div class="med-time">${med.hora} hrs</div>
+          </div>
+        `;
+      });
+    }
+
+    window.addEventListener('load', () => {
+      solicitarPermisos();
+      pintarMedicamentos();
+      iniciarRelojVerificador();
+    });
+  </script>
+</body>
+</html>
